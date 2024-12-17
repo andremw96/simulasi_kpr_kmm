@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="app_name">SIMULASI KPR</string>
+    <string name="string_hitung">HITUNG</string>
+    <string name="string_harga_rumah">Harga Rumah</string>
+    <string name="string_dp">DP</string>
+    <string name="string_tenor">Tenor</string>
+    <string name="string_bunga_per_tahun">Bunga per Tahun</string>
+    <string name="string_tahun_ke">Tahun ke - %1$s</string>
+    <string name="string_dp_percentage">Dp Percent</string>
+    <string name="string_total_pinjaman">Total Pinjaman</string>
+</resources>
