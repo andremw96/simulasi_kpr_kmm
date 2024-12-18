@@ -1,6 +1,7 @@
 package com.andremw96.simulasikpr.ui.page.kprsimulation
 
 import androidx.lifecycle.ViewModel
+import com.andremw96.simulasikpr.ui.page.kprsimulation.model.SimulationResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -71,7 +72,9 @@ class KprSimulationViewModel(
         )
     }
 
-    override fun calculateSimulation() {
+    override fun calculateSimulation(): List<SimulationResult> {
+        val resultList = mutableListOf<SimulationResult>()
+
         val housePriceValue = _uiState.value.housePrice.toDoubleOrNull() ?: 0.0
         val downPaymentCurrencyValue = _uiState.value.downPaymentCurrency.toDoubleOrNull() ?: 0.0
         val tenorValue = _uiState.value.tenor.toIntOrNull() ?: 0
@@ -81,9 +84,6 @@ class KprSimulationViewModel(
         val monthlyInterestRates = interestsValue.map { it / 12 / 100 }
         var remainingLoan = housePriceValue - downPaymentCurrencyValue
         var currentMonth = 1
-
-        println("Bulan | Sisa Pokok Awal | Cicilan Bunga | Cicilan Pokok | Cicilan Total | Sisa Pokok Akhir")
-        println("--------------------------------------------------------------------------------------------")
 
         for (year in 0 until tenorValue) {
             val monthlyInterestRate = monthlyInterestRates[year]
@@ -101,21 +101,22 @@ class KprSimulationViewModel(
                 val principalPayment = monthlyInstallment - interestPayment
                 val remainingLoanEnd = remainingLoan - principalPayment
 
-                println(
-                    "$currentMonth | ${decimalFormat.format(remainingLoan)} | ${
-                        decimalFormat.format(
-                            interestPayment
-                        )
-                    } | ${decimalFormat.format(principalPayment)} | ${
-                        decimalFormat.format(
-                            monthlyInstallment
-                        )
-                    } | ${decimalFormat.format(remainingLoanEnd)}"
+                resultList.add(
+                    SimulationResult(
+                        currentMonth.toString(),
+                        decimalFormat.format(remainingLoan),
+                        decimalFormat.format(interestPayment),
+                        decimalFormat.format(principalPayment),
+                        decimalFormat.format(monthlyInstallment),
+                        decimalFormat.format(remainingLoanEnd),
+                    )
                 )
 
                 remainingLoan = remainingLoanEnd
                 currentMonth++
             }
         }
+
+        return resultList
     }
 }

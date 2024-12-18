@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.andremw96.simulasikpr.ui.page.kprsimulation.model.SimulationResult
 import com.andremw96.simulasikpr.ui.theme.KprSimTypography
 import com.andremw96.simulasikpr.ui.theme.SimulasiKPRColor
 import com.andremw96.simulasikpr.ui.widget.KprSimNumberTextField
@@ -41,6 +42,7 @@ import simulasikpr.composeapp.generated.resources.string_tenor
 fun KprSimulationPage(
     viewState: KprSimulationPageState,
     action: KprSimulationPageAction,
+    onSimulationResult: (List<SimulationResult>) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -65,7 +67,9 @@ fun KprSimulationPage(
             },
             interests = viewState.interests,
             onUpdateInterest = { index, newValue -> action.updateInterest(index, newValue) },
-            onSubmit = { action.calculateSimulation() }
+            onSubmit = {
+                onSimulationResult(action.calculateSimulation())
+            }
         )
     }
 }
@@ -207,7 +211,8 @@ fun KprSimulationPageContent(
                 disabledContentColor = SimulasiKPRColor.colors.kprSimulationPageColors.submitButtonTextColor,
                 disabledContainerColor = SimulasiKPRColor.colors.kprSimulationPageColors.submitButtonDisabledBgColor,
             ),
-            shape = RoundedCornerShape(8.dp)
+            shape = RoundedCornerShape(8.dp),
+            enabled = housePrice.isNotBlank() && housePrice != "0.00" && tenor.isNotBlank() && tenor != "0",
         ) {
             Text(
                 text = stringResource(Res.string.string_hitung),
