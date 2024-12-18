@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -62,7 +64,8 @@ fun KprSimulationPage(
                 action.updateTenor(it)
             },
             interests = viewState.interests,
-            onUpdateInterest = { index, newValue -> action.updateInterest(index, newValue) }
+            onUpdateInterest = { index, newValue -> action.updateInterest(index, newValue) },
+            onSubmit = { action.calculateSimulation() }
         )
     }
 }
@@ -80,6 +83,7 @@ fun KprSimulationPageContent(
     onTenorChange: (String) -> Unit,
     interests: MutableList<String>,
     onUpdateInterest: (Int, String) -> Unit,
+    onSubmit: () -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -155,13 +159,36 @@ fun KprSimulationPageContent(
             Spacer(modifier = Modifier.height(2.dp))
 
             for (i in 1..tenor.toInt()) {
-                KprSimNumberTextField(
-                    value = if (i <= interests.size) interests[i - 1] else "",
-                    onValueChange = { onUpdateInterest(i - 1, it) },
-                    label = stringResource(Res.string.string_tahun_ke, i),
-                    isCurrency = false,
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                )
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    KprSimNumberTextField(
+                        value = if (i <= interests.size) interests[i - 1] else "",
+                        onValueChange = { onUpdateInterest(i - 1, it) },
+                        label = stringResource(Res.string.string_tahun_ke, i),
+                        isCurrency = false,
+                        modifier = Modifier.weight(0.7f),
+                    )
+
+                    if (i != 1) {
+                        Spacer(modifier = Modifier.width(4.dp))
+
+                        Button(
+                            onClick = { onUpdateInterest(i-1, interests[i-2]) },
+                            modifier = Modifier.wrapContentHeight()
+                                .weight(0.1f),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text(
+                                text = "+",
+                                style = KprSimTypography().labelSmall,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(4.dp))
             }
@@ -170,7 +197,7 @@ fun KprSimulationPageContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { /* TODO: handle calculate action */ },
+            onClick = onSubmit,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp),

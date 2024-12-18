@@ -4,14 +4,15 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlin.math.pow
 
 expect class DecimalFormat() {
     fun format(double: Double): String
 }
 
-class KprSimulationViewModel : ViewModel(), KprSimulationPageAction {
-
-
+class KprSimulationViewModel(
+    private val decimalFormat: DecimalFormat,
+) : ViewModel(), KprSimulationPageAction {
     private val _uiState = MutableStateFlow(KprSimulationPageState())
     val uiState: StateFlow<KprSimulationPageState> = _uiState.asStateFlow()
 
@@ -25,7 +26,7 @@ class KprSimulationViewModel : ViewModel(), KprSimulationPageAction {
         val housePriceValue = _uiState.value.housePrice.toDoubleOrNull() ?: 0.0
         val currencyValue = newCurrency.toDoubleOrNull() ?: 0.0
         val newPercentage = if (housePriceValue != 0.0) {
-            DecimalFormat().format((currencyValue / housePriceValue) * 100.0)
+            decimalFormat.format((currencyValue / housePriceValue) * 100.0)
         } else {
             ""
         }
@@ -39,7 +40,7 @@ class KprSimulationViewModel : ViewModel(), KprSimulationPageAction {
         val housePriceValue = _uiState.value.housePrice.toDoubleOrNull() ?: 0.0
         val percentageValue = newPercentage.toDoubleOrNull() ?: 0.0
         val newCurrency = if (housePriceValue != 0.0) {
-            DecimalFormat().format(((percentageValue / 100.0) * housePriceValue))
+            decimalFormat.format(((percentageValue / 100.0) * housePriceValue))
         } else {
             ""
         }
@@ -68,5 +69,53 @@ class KprSimulationViewModel : ViewModel(), KprSimulationPageAction {
                 it[index] = newInterest
             }
         )
+    }
+
+    override fun calculateSimulation() {
+        val housePriceValue = _uiState.value.housePrice.toDoubleOrNull() ?: 0.0
+        val downPaymentCurrencyValue = _uiState.value.downPaymentCurrency.toDoubleOrNull() ?: 0.0
+        val tenorValue = _uiState.value.tenor.toIntOrNull() ?: 0
+        val interestsValue = _uiState.value.interests.map { it.toDoubleOrNull() ?: 0.0 }
+
+        val totalMonths = tenorValue * 12
+        val monthlyInterestRates = interestsValue.map { it / 12 / 100 }
+        var remainingLoan = housePriceValue - downPaymentCurrencyValue
+        var currentMonth = 1
+
+        println("Bulan | Sisa Pokok Awal | Cicilan Bunga | Cicilan Pokok | Cicilan Total | Sisa Pokok Akhir")
+        println("--------------------------------------------------------------------------------------------")
+
+        for (year in 0 until tenorValue) {
+            val monthlyInterestRate = monthlyInterestRates[year]
+            val monthsInYear = 12
+            val remainingMonths = totalMonths - currentMonth + 1
+
+            val monthlyInstallment =
+                (remainingLoan * monthlyInterestRate * (1 + monthlyInterestRate).pow(remainingMonths.toDouble())) /
+                        ((1 + monthlyInterestRate).pow(remainingMonths.toDouble()) - 1)
+
+            for (month in 1..monthsInYear) {
+                if (currentMonth > totalMonths) break
+
+                val interestPayment = remainingLoan * monthlyInterestRate
+                val principalPayment = monthlyInstallment - interestPayment
+                val remainingLoanEnd = remainingLoan - principalPayment
+
+                println(
+                    "$currentMonth | ${decimalFormat.format(remainingLoan)} | ${
+                        decimalFormat.format(
+                            interestPayment
+                        )
+                    } | ${decimalFormat.format(principalPayment)} | ${
+                        decimalFormat.format(
+                            monthlyInstallment
+                        )
+                    } | ${decimalFormat.format(remainingLoanEnd)}"
+                )
+
+                remainingLoan = remainingLoanEnd
+                currentMonth++
+            }
+        }
     }
 }

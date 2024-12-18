@@ -5,5 +5,6 @@ data class KprSimulationPageState(
     var downPaymentCurrency: String = "",
     var downPaymentPercentage: String = "",
     var tenor: String = "",
-    val interests: MutableList<String> = mutableListOf()
+    val interests: MutableList<String> = mutableListOf(),
+    val loanAmount: String = "",
 )

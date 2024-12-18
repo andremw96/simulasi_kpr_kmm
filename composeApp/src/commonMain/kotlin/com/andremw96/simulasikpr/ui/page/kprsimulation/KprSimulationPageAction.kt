@@ -6,4 +6,5 @@ interface KprSimulationPageAction {
     fun updateDownPaymentPercentage(newPercentage: String)
     fun updateTenor(newTenor: String)
     fun updateInterest(index: Int, newInterest: String)
+    fun calculateSimulation()
 }
