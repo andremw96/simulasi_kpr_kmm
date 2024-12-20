@@ -25,10 +25,10 @@ class CurrencyAmountInputVisualTransformation(
             .dropLast(numberOfDecimals)
             .reversed()
             .chunked(3)
-            .joinToString(thousandsSeparator.toString())
+            .joinToString(thousandsSeparator)
             .reversed()
             .ifEmpty {
-                zero.toString()
+                zero
             }
 
         val fractionPart = inputText.takeLast(numberOfDecimals).let {
