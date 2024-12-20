@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.andremw96.simulasikpr.ui.page.kprsimulation.model.SimulationResult
 import com.andremw96.simulasikpr.ui.theme.KprSimTypography
 import com.andremw96.simulasikpr.ui.theme.SimulasiKPRColor
 import com.andremw96.simulasikpr.ui.widget.KprSimNumberTextField
@@ -42,7 +41,7 @@ import simulasikpr.composeapp.generated.resources.string_tenor
 fun KprSimulationPage(
     viewState: KprSimulationPageState,
     action: KprSimulationPageAction,
-    onSimulationResult: (List<SimulationResult>) -> Unit,
+    onSimulationResult: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -68,7 +67,8 @@ fun KprSimulationPage(
             interests = viewState.interests,
             onUpdateInterest = { index, newValue -> action.updateInterest(index, newValue) },
             onSubmit = {
-                onSimulationResult(action.calculateSimulation())
+                action.calculateSimulation()
+                onSimulationResult()
             }
         )
     }

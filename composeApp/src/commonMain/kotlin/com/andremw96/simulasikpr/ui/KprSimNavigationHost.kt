@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.andremw96.simulasikpr.ui.page.kprsimulation.DecimalFormat
 import com.andremw96.simulasikpr.ui.page.kprsimulation.KprSimulationPage
 import com.andremw96.simulasikpr.ui.page.kprsimulation.KprSimulationViewModel
 import com.andremw96.simulasikpr.ui.page.kprsimulationresult.KprSimulationResultPage
@@ -22,15 +21,14 @@ sealed class KprSimScreen(val route: String) {
 @Composable
 fun KprSimNavigationHost(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
+    val viewModel: KprSimulationViewModel = remember { KprSimulationViewModel() }
+    val viewState by viewModel.uiState.collectAsState()
 
     NavHost(
         navController = navController,
         startDestination = KprSimScreen.KprSimulationPage.route
     ) {
         composable(route = KprSimScreen.KprSimulationPage.route) {
-            val viewModel: KprSimulationViewModel = remember { KprSimulationViewModel(DecimalFormat()) }
-            val viewState by viewModel.uiState.collectAsState()
-
             KprSimulationPage(viewState, viewModel) {
                 navController.navigate(KprSimScreen.KprSimulationResultPage.route)
             }
@@ -38,7 +36,7 @@ fun KprSimNavigationHost(modifier: Modifier = Modifier) {
         composable(
             route = KprSimScreen.KprSimulationResultPage.route,
         ) {
-            KprSimulationResultPage()
+            KprSimulationResultPage(viewState)
         }
     }
 

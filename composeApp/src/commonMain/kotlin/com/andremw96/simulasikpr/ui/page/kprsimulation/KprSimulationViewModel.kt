@@ -7,13 +7,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlin.math.pow
 
-expect class DecimalFormat() {
-    fun format(double: Double): String
-}
+expect fun decimalFormat(double: Double): String
+expect fun Double.toIdrCurrency(prefix: String = ""): String
 
-class KprSimulationViewModel(
-    private val decimalFormat: DecimalFormat,
-) : ViewModel(), KprSimulationPageAction {
+class KprSimulationViewModel() : ViewModel(), KprSimulationPageAction {
     private val _uiState = MutableStateFlow(KprSimulationPageState())
     val uiState: StateFlow<KprSimulationPageState> = _uiState.asStateFlow()
 
@@ -27,7 +24,7 @@ class KprSimulationViewModel(
         val housePriceValue = _uiState.value.housePrice.toDoubleOrNull() ?: 0.0
         val currencyValue = newCurrency.toDoubleOrNull() ?: 0.0
         val newPercentage = if (housePriceValue != 0.0) {
-            decimalFormat.format((currencyValue / housePriceValue) * 100.0)
+            decimalFormat((currencyValue / housePriceValue) * 100.0)
         } else {
             ""
         }
@@ -41,7 +38,7 @@ class KprSimulationViewModel(
         val housePriceValue = _uiState.value.housePrice.toDoubleOrNull() ?: 0.0
         val percentageValue = newPercentage.toDoubleOrNull() ?: 0.0
         val newCurrency = if (housePriceValue != 0.0) {
-            decimalFormat.format(((percentageValue / 100.0) * housePriceValue))
+            decimalFormat(((percentageValue / 100.0) * housePriceValue))
         } else {
             ""
         }
@@ -72,7 +69,7 @@ class KprSimulationViewModel(
         )
     }
 
-    override fun calculateSimulation(): List<SimulationResult> {
+    override fun calculateSimulation() {
         val resultList = mutableListOf<SimulationResult>()
 
         val housePriceValue = _uiState.value.housePrice.toDoubleOrNull() ?: 0.0
@@ -84,6 +81,17 @@ class KprSimulationViewModel(
         val monthlyInterestRates = interestsValue.map { it / 12 / 100 }
         var remainingLoan = housePriceValue - downPaymentCurrencyValue
         var currentMonth = 1
+
+        resultList.add(
+            SimulationResult(
+                "Bulan",
+                "Bunga",
+                "Angs. Bunga",
+                "Angs. Pokok",
+                "Angsuran",
+                "Sisa Pokok Pinjaman",
+            )
+        )
 
         for (year in 0 until tenorValue) {
             val monthlyInterestRate = monthlyInterestRates[year]
@@ -104,11 +112,11 @@ class KprSimulationViewModel(
                 resultList.add(
                     SimulationResult(
                         currentMonth.toString(),
-                        decimalFormat.format(remainingLoan),
-                        decimalFormat.format(interestPayment),
-                        decimalFormat.format(principalPayment),
-                        decimalFormat.format(monthlyInstallment),
-                        decimalFormat.format(remainingLoanEnd),
+                        interestsValue[year].toString(),
+                        decimalFormat(interestPayment),
+                        decimalFormat(principalPayment),
+                        decimalFormat(monthlyInstallment),
+                        decimalFormat(remainingLoanEnd),
                     )
                 )
 
@@ -117,6 +125,8 @@ class KprSimulationViewModel(
             }
         }
 
-        return resultList
+        _uiState.value = _uiState.value.copy(
+            simulationResult = resultList
+        )
     }
 }

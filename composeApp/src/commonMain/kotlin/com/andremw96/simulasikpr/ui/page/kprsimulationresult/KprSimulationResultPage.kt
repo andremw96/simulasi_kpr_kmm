@@ -28,6 +28,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.andremw96.simulasikpr.ui.page.kprsimulation.KprSimulationPageState
+import com.andremw96.simulasikpr.ui.page.kprsimulation.model.SimulationResult
+import com.andremw96.simulasikpr.ui.page.kprsimulation.toIdrCurrency
 import com.andremw96.simulasikpr.ui.widget.KprSimTable
 import com.andremw96.simulasikpr.ui.widget.KprSimTopAppBar
 import org.jetbrains.compose.resources.stringResource
@@ -36,15 +39,21 @@ import simulasikpr.composeapp.generated.resources.string_tenor
 import simulasikpr.composeapp.generated.resources.string_total_pinjaman
 
 @Composable
-fun KprSimulationResultPage() {
+fun KprSimulationResultPage(
+    viewState: KprSimulationPageState,
+) {
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
         KprSimTopAppBar()
-        LoanInputs()
-        RepaymentTable()
+        LoanInputs(
+            totalLoan = (viewState.housePrice.toDouble() - viewState.downPaymentCurrency.toDouble()).toIdrCurrency(),
+            totalTenor = viewState.tenor,
+        )
+        RepaymentTable(viewState.simulationResult)
     }
 }
 
@@ -61,23 +70,20 @@ fun InputField(label: String, value: String) {
 }
 
 @Composable
-fun LoanInputs() {
+fun LoanInputs(
+    totalLoan: String,
+    totalTenor: String,
+) {
     Column(modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
-        InputField(label = stringResource(Res.string.string_total_pinjaman), "Rp. 300.000.000")
+        InputField(label = stringResource(Res.string.string_total_pinjaman), totalLoan)
         Spacer(modifier = Modifier.height(8.dp))
-        InputField(label = stringResource(Res.string.string_tenor), "12")
+        InputField(label = stringResource(Res.string.string_tenor), totalTenor)
         Spacer(modifier = Modifier.height(8.dp))
-        Interests()
     }
 }
 
 @Composable
-fun Interests() {
-    InputField(label = "Bunga Fixed (1-5 tahun)", "4.5%")
-}
-
-@Composable
-fun RepaymentTable() {
+fun RepaymentTable(simulationResult: List<SimulationResult>) {
     Column(modifier = Modifier.padding(16.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -88,15 +94,20 @@ fun RepaymentTable() {
             GroupByDropDown()
         }
         Spacer(modifier = Modifier.height(8.dp))
-        // Just a fake data... a Pair of Int and String
         KprSimTable(
             modifier = Modifier.fillMaxSize(),
-            columnCount = 3,
-            rowCount = 10,
+            columnCount = 6,
+            rowCount = simulationResult.size,
             cellContent = { columnIndex, rowIndex ->
-                TableCell(
-                    text = "Column: $columnIndex; Row: $rowIndex",
-                )
+                val data = simulationResult[rowIndex]
+                when (columnIndex) {
+                    0 -> TableCell(text = data.currentMonth)
+                    1 -> TableCell(text = data.interestRate)
+                    2 -> TableCell(text = if (rowIndex == 0) data.interestPayment else data.interestPayment.toDouble().toIdrCurrency())
+                    3 -> TableCell(text = if (rowIndex == 0) data.principalPayment else data.principalPayment.toDouble().toIdrCurrency())
+                    4 -> TableCell(text = if (rowIndex == 0) data.monthlyInstallment else data.monthlyInstallment.toDouble().toIdrCurrency())
+                    5 -> TableCell(text = if (rowIndex == 0) data.remainingLoanEnd else data.remainingLoanEnd.toDouble().toIdrCurrency())
+                }
             })
     }
 }
@@ -108,7 +119,6 @@ fun TableCell(
     Text(
         text = text,
         Modifier
-            .border(1.dp, Color.Black)
             .padding(8.dp)
     )
 }
