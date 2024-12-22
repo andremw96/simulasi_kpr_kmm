@@ -52,7 +52,7 @@ fun KprSimulationResultPage(
             backButtonOnClick?.invoke()
         }
         LoanInputs(
-            totalLoan = ((viewState.housePrice.toDouble() - viewState.downPaymentCurrency.toDouble()) / 100.0).toIdrCurrency(),
+            totalLoan = (viewState.housePrice.toDouble() - viewState.downPaymentCurrency.toDouble()).toIdrCurrency(),
             totalTenor = viewState.tenor,
         )
         RepaymentTable(viewState.simulationResult)
@@ -99,16 +99,49 @@ fun RepaymentTable(simulationResult: List<SimulationResult>) {
         KprSimTable(
             modifier = Modifier.fillMaxSize(),
             columnCount = 6,
-            rowCount = simulationResult.size,
+            rowCount = simulationResult.size + 1,
             cellContent = { columnIndex, rowIndex ->
-                val data = simulationResult[rowIndex]
-                when (columnIndex) {
-                    0 -> TableCell(text = data.currentMonth)
-                    1 -> TableCell(text = "${data.interestRate}% ")
-                    2 -> TableCell(text = if (rowIndex == 0) data.interestPayment else data.interestPayment.toDouble().toIdrCurrency())
-                    3 -> TableCell(text = if (rowIndex == 0) data.principalPayment else data.principalPayment.toDouble().toIdrCurrency())
-                    4 -> TableCell(text = if (rowIndex == 0) data.monthlyInstallment else data.monthlyInstallment.toDouble().toIdrCurrency())
-                    5 -> TableCell(text = if (rowIndex == 0) data.remainingLoanEnd else data.remainingLoanEnd.toDouble().toIdrCurrency())
+                if (rowIndex < simulationResult.size) {
+                    val data = simulationResult[rowIndex]
+                    when (columnIndex) {
+                        0 -> TableCell(text = data.currentMonth)
+                        1 -> TableCell(text = "${data.interestRate}%")
+                        2 -> TableCell(
+                            text = if (rowIndex == 0) data.interestPayment else data.interestPayment.toDouble()
+                                .toIdrCurrency()
+                        )
+
+                        3 -> TableCell(
+                            text = if (rowIndex == 0) data.principalPayment else data.principalPayment.toDouble()
+                                .toIdrCurrency()
+                        )
+
+                        4 -> TableCell(
+                            text = if (rowIndex == 0) data.monthlyInstallment else data.monthlyInstallment.toDouble()
+                                .toIdrCurrency()
+                        )
+
+                        5 -> TableCell(
+                            text = if (rowIndex == 0) data.remainingLoanEnd else data.remainingLoanEnd.toDouble()
+                                .toIdrCurrency()
+                        )
+                    }
+                } else if (rowIndex == simulationResult.size) {
+                    val filteredListIgnoreHeader = simulationResult.filterIndexed { index, _ -> index != 0 }
+                    when (columnIndex) {
+                        0 -> TableCell(text = "Total")
+                        1 -> TableCell(text = "")
+                        2 -> TableCell(text = filteredListIgnoreHeader
+                            .sumOf { it.interestPayment.toDouble() }.toIdrCurrency())
+
+                        3 -> TableCell(text = filteredListIgnoreHeader
+                            .sumOf { it.principalPayment.toDouble() }.toIdrCurrency())
+
+                        4 -> TableCell(text = filteredListIgnoreHeader
+                            .sumOf { it.monthlyInstallment.toDouble() }.toIdrCurrency())
+
+                        5 -> TableCell(text = "")
+                    }
                 }
             })
     }

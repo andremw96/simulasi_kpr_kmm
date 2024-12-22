@@ -15,8 +15,13 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -115,7 +120,7 @@ fun KprSimulationPageContent(
                 onValueChange = onDownPaymentCurrencyChange,
                 label = stringResource(Res.string.string_dp),
                 isEnabled = housePrice.isNotBlank() && housePrice != "0.00",
-                isCurrency = true,
+                isCurrency = false,
                 modifier = Modifier
                     .weight(1f)
                     .padding(end = 8.dp)
@@ -179,17 +184,12 @@ fun KprSimulationPageContent(
                     if (i != 1) {
                         Spacer(modifier = Modifier.width(4.dp))
 
-                        Button(
+                        IconButton(
                             onClick = { onUpdateInterest(i-1, interests[i-2]) },
                             modifier = Modifier.wrapContentHeight()
                                 .weight(0.1f),
-                            shape = RoundedCornerShape(8.dp)
                         ) {
-                            Text(
-                                text = "+",
-                                style = KprSimTypography().labelSmall,
-                                fontWeight = FontWeight.Bold,
-                            )
+                            Icon(imageVector = Icons.Default.KeyboardArrowUp, contentDescription = "Dropdown")
                         }
                     }
                 }

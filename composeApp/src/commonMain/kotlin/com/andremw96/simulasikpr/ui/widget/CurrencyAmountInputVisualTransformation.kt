@@ -8,21 +8,21 @@ import kotlin.math.max
 
 class CurrencyAmountInputVisualTransformation(
     private val fixedCursorAtTheEnd: Boolean = true,
-    private val numberOfDecimals: Int = 2
+    //private val numberOfDecimals: Int = 2
 ) : VisualTransformation {
 
     override fun filter(text: AnnotatedString): TransformedText {
         val thousandsSeparator = "."
-        val decimalSeparator = ","
+        //val decimalSeparator = ","
         val zero = "0"
 
         val inputText = text.text
             .replace(thousandsSeparator, "")
-            .replace(decimalSeparator, "")
+            //.replace(decimalSeparator, "")
             .trimStart { it == '0' }
 
         val intPart = inputText
-            .dropLast(numberOfDecimals)
+            //.dropLast(numberOfDecimals)
             .reversed()
             .chunked(3)
             .joinToString(thousandsSeparator)
@@ -31,17 +31,17 @@ class CurrencyAmountInputVisualTransformation(
                 zero
             }
 
-        val fractionPart = inputText.takeLast(numberOfDecimals).let {
-            if (it.length != numberOfDecimals) {
-                List(numberOfDecimals - it.length) {
-                    zero
-                }.joinToString("") + it
-            } else {
-                it
-            }
-        }
+//        val fractionPart = inputText.takeLast(numberOfDecimals).let {
+//            if (it.length != numberOfDecimals) {
+//                List(numberOfDecimals - it.length) {
+//                    zero
+//                }.joinToString("") + it
+//            } else {
+//                it
+//            }
+//        }
 
-        val formattedNumber = intPart + decimalSeparator + fractionPart
+        val formattedNumber = intPart //+ decimalSeparator + fractionPart
 
         val newText = AnnotatedString(
             text = formattedNumber,
@@ -58,7 +58,7 @@ class CurrencyAmountInputVisualTransformation(
             MovableCursorOffsetMapping(
                 unmaskedText = text.toString(),
                 maskedText = newText.toString(),
-                decimalDigits = numberOfDecimals
+                decimalDigits = 2
             )
         }
 

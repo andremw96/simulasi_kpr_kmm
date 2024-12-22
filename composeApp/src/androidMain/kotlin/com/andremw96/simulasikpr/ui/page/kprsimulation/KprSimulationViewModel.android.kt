@@ -5,10 +5,8 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 
 actual fun decimalFormat(double: Double): String {
-    val df = java.text.DecimalFormat()
-    df.isGroupingUsed = false
-    df.maximumFractionDigits = 2
-    df.isDecimalSeparatorAlwaysShown = false
+    val df = DecimalFormat("#.##")
+    df.roundingMode = RoundingMode.CEILING
     return df.format(double)
 }
 val currencySymbols = DecimalFormatSymbols().apply {
