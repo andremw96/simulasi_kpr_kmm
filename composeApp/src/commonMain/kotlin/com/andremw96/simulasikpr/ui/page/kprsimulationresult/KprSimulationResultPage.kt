@@ -1,7 +1,6 @@
 package com.andremw96.simulasikpr.ui.page.kprsimulationresult
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +40,7 @@ import simulasikpr.composeapp.generated.resources.string_total_pinjaman
 @Composable
 fun KprSimulationResultPage(
     viewState: KprSimulationPageState,
+    backButtonOnClick: (() -> Unit)? = null
 ) {
 
     Column(
@@ -48,9 +48,11 @@ fun KprSimulationResultPage(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        KprSimTopAppBar()
+        KprSimTopAppBar {
+            backButtonOnClick?.invoke()
+        }
         LoanInputs(
-            totalLoan = (viewState.housePrice.toDouble() - viewState.downPaymentCurrency.toDouble()).toIdrCurrency(),
+            totalLoan = ((viewState.housePrice.toDouble() - viewState.downPaymentCurrency.toDouble()) / 100.0).toIdrCurrency(),
             totalTenor = viewState.tenor,
         )
         RepaymentTable(viewState.simulationResult)
@@ -102,7 +104,7 @@ fun RepaymentTable(simulationResult: List<SimulationResult>) {
                 val data = simulationResult[rowIndex]
                 when (columnIndex) {
                     0 -> TableCell(text = data.currentMonth)
-                    1 -> TableCell(text = data.interestRate)
+                    1 -> TableCell(text = "${data.interestRate}% ")
                     2 -> TableCell(text = if (rowIndex == 0) data.interestPayment else data.interestPayment.toDouble().toIdrCurrency())
                     3 -> TableCell(text = if (rowIndex == 0) data.principalPayment else data.principalPayment.toDouble().toIdrCurrency())
                     4 -> TableCell(text = if (rowIndex == 0) data.monthlyInstallment else data.monthlyInstallment.toDouble().toIdrCurrency())

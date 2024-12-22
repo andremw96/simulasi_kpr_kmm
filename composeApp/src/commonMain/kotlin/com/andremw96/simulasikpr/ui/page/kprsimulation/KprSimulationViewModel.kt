@@ -17,6 +17,8 @@ class KprSimulationViewModel() : ViewModel(), KprSimulationPageAction {
     override fun updateHousePrice(newPrice: String) {
         _uiState.value = _uiState.value.copy(
             housePrice = newPrice,
+            downPaymentPercentage = "",
+            downPaymentCurrency = "0"
         )
     }
 
@@ -73,7 +75,7 @@ class KprSimulationViewModel() : ViewModel(), KprSimulationPageAction {
         val resultList = mutableListOf<SimulationResult>()
 
         val housePriceValue = (_uiState.value.housePrice.toDoubleOrNull()?.div(100.0)) ?: 0.0
-        val downPaymentCurrencyValue = _uiState.value.downPaymentCurrency.toDoubleOrNull() ?: 0.0
+        val downPaymentCurrencyValue = (_uiState.value.downPaymentCurrency.toDoubleOrNull()?.div(100)) ?: 0.0
         val tenorValue = _uiState.value.tenor.toIntOrNull() ?: 0
         val interestsValue = _uiState.value.interests.map { it.toDoubleOrNull() ?: 0.0 }
 
@@ -126,7 +128,6 @@ class KprSimulationViewModel() : ViewModel(), KprSimulationPageAction {
         }
 
         _uiState.value = _uiState.value.copy(
-            housePrice = decimalFormat(housePriceValue),
             simulationResult = resultList
         )
     }

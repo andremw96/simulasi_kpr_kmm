@@ -36,7 +36,9 @@ fun KprSimNavigationHost(modifier: Modifier = Modifier) {
         composable(
             route = KprSimScreen.KprSimulationResultPage.route,
         ) {
-            KprSimulationResultPage(viewState)
+            KprSimulationResultPage(viewState) {
+                navController.popBackStack()
+            }
         }
     }
 

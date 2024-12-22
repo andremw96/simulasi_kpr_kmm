@@ -17,8 +17,8 @@ class CurrencyAmountInputVisualTransformation(
         val zero = "0"
 
         val inputText = text.text
-            .replace(".", "")
-            .replace(",", "")
+            .replace(thousandsSeparator, "")
+            .replace(decimalSeparator, "")
             .trimStart { it == '0' }
 
         val intPart = inputText
