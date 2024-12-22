@@ -8,6 +8,7 @@ class KprSimulationPageColors(
     val submitButtonBgColor: Color,
     val submitButtonTextColor: Color,
     val submitButtonDisabledBgColor: Color,
+    val housePriceTextColor: Color,
 )
 
 val kprSimulationPageLight = KprSimulationPageColors(
@@ -16,6 +17,7 @@ val kprSimulationPageLight = KprSimulationPageColors(
     submitButtonBgColor = accentColor,
     submitButtonTextColor = white,
     submitButtonDisabledBgColor = gray,
+    housePriceTextColor = gray,
 )
 
 val kprSimulationPagDark = KprSimulationPageColors(
@@ -24,4 +26,5 @@ val kprSimulationPagDark = KprSimulationPageColors(
     submitButtonBgColor = accentColor,
     submitButtonTextColor = white,
     submitButtonDisabledBgColor = gray,
+    housePriceTextColor = white,
 )

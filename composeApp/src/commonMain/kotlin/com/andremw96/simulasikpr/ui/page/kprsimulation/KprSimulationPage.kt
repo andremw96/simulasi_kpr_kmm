@@ -104,9 +104,17 @@ fun KprSimulationPageContent(
             value = housePrice,
             onValueChange = onHousePriceValueChange,
             label = stringResource(Res.string.string_harga_rumah),
-            isCurrency = true,
             modifier = Modifier.fillMaxWidth(),
         )
+
+        if (housePrice.isNotBlank()) {
+            Text(
+                text = housePrice.toDouble().toIdrCurrency(),
+                style = KprSimTypography().bodyMedium,
+                color = SimulasiKPRColor.colors.kprSimulationPageColors.housePriceTextColor,
+                modifier = Modifier.align(Alignment.Start).padding(top = 4.dp)
+            )
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -120,7 +128,6 @@ fun KprSimulationPageContent(
                 onValueChange = onDownPaymentCurrencyChange,
                 label = stringResource(Res.string.string_dp),
                 isEnabled = housePrice.isNotBlank() && housePrice != "0.00",
-                isCurrency = false,
                 modifier = Modifier
                     .weight(1f)
                     .padding(end = 8.dp)
@@ -137,12 +144,20 @@ fun KprSimulationPageContent(
                     onValueChange = onDownPaymentPercentageChange,
                     label = stringResource(Res.string.string_dp_percentage),
                     isEnabled = housePrice.isNotBlank() && housePrice != "0.00",
-                    isCurrency = false,
                     modifier = Modifier.weight(0.8f)
                 )
 
                 Text("%", modifier = Modifier.weight(0.2f))
             }
+        }
+
+        if (downPaymentCurrency.isNotBlank()) {
+            Text(
+                text = downPaymentCurrency.toDouble().toIdrCurrency(),
+                style = KprSimTypography().bodyMedium,
+                color = SimulasiKPRColor.colors.kprSimulationPageColors.housePriceTextColor,
+                modifier = Modifier.align(Alignment.Start).padding(top = 4.dp)
+            )
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -152,7 +167,6 @@ fun KprSimulationPageContent(
             onValueChange = onTenorChange,
             label = stringResource(Res.string.string_tenor),
             isEnabled = housePrice.isNotBlank() && housePrice != "0.00",
-            isCurrency = false,
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -177,7 +191,6 @@ fun KprSimulationPageContent(
                         value = if (i <= interests.size) interests[i - 1] else "",
                         onValueChange = { onUpdateInterest(i - 1, it) },
                         label = stringResource(Res.string.string_tahun_ke, i),
-                        isCurrency = false,
                         modifier = Modifier.weight(0.7f),
                     )
 

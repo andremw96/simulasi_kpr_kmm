@@ -11,12 +11,14 @@ actual fun decimalFormat(double: Double): String {
 }
 val currencySymbols = DecimalFormatSymbols().apply {
     currencySymbol = ""
-    monetaryDecimalSeparator = ','
-    groupingSeparator = '.'
+    monetaryDecimalSeparator = '.'
+    groupingSeparator = ','
 }
 val formatter = (DecimalFormat.getInstance() as DecimalFormat).apply {
     decimalFormatSymbols = currencySymbols
-    isParseIntegerOnly = true
-    roundingMode = RoundingMode.UP
+    isParseIntegerOnly = false
+    roundingMode = RoundingMode.CEILING
 }
-actual fun Double.toIdrCurrency(prefix: String) = formatter.format(this).let { "${prefix} Rp $it" }.trim()
+actual fun Double.toIdrCurrency(prefix: String) = formatter.format(this).let {
+    "$prefix Rp $it"
+}.trim()

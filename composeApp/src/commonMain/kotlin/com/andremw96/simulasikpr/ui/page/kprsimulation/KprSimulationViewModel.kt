@@ -16,9 +16,9 @@ class KprSimulationViewModel() : ViewModel(), KprSimulationPageAction {
 
     override fun updateHousePrice(newPrice: String) {
         _uiState.value = _uiState.value.copy(
-            housePrice = newPrice,
+            housePrice = newPrice.replace(",", "."),
             downPaymentPercentage = "",
-            downPaymentCurrency = "0",
+            downPaymentCurrency = "",
         )
     }
 
