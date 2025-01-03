@@ -1,3 +1,5 @@
+This project is to create simulation for KPR for house
+
 This is a Kotlin Multiplatform project targeting Android, iOS.
 
 * `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
@@ -11,4 +13,3 @@ This is a Kotlin Multiplatform project targeting Android, iOS.
   you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
 
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
